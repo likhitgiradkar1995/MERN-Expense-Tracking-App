@@ -1,51 +1,39 @@
-import { useState } from "react";
+import { Container } from "@mui/material";
+import { useEffect, useState } from "react";
+import AppBar from "./components/AppBar";
+import TransactionForm from "./components/TransactionForm";
+import TransactionsList from "./components/TransactionsList";
 
 function App() {
-  const [form, setForm] = useState({ amount: 0, description: "", date: "" });
+  const [transactions, setTransactions] = useState([]);
+  const [editTransaction, setEditTransaction] = useState({});
 
-  const handleInput = (e) => {
-    e.preventDefault();
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  useEffect(() => {
+    fetchTransaction();
+  }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const res = await fetch("http://localhost:4000/transaction", {
-      method: "POST",
-      body: JSON.stringify(form),
-      headers: {
-        "content-type": "application/json",
-      },
-    });
-    const data = await res.json();
-    console.log("data >> ", data);
+  const fetchTransaction = async () => {
+    const res = await fetch("http://localhost:4000/transaction");
+    const { data } = await res.json();
+    setTransactions(data);
+    console.log("fetch data >> ", data);
   };
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="number"
-          name="amount"
-          value={form.amount}
-          onChange={handleInput}
-          placeholder="Enter transaction amount"
+      <AppBar />
+      <Container>
+        <TransactionForm
+          fetchTransaction={fetchTransaction}
+          editTransaction={editTransaction}
+          setEditTransaction={setEditTransaction}
         />
-        <input
-          type="text"
-          name="description"
-          value={form.description}
-          onChange={handleInput}
-          placeholder="Enter description"
+        <TransactionsList
+          transactionsList={transactions}
+          fetchTransaction={fetchTransaction}
+          setEditTransaction={setEditTransaction}
         />
-        <input
-          type="date"
-          name="date"
-          value={form.date}
-          onChange={handleInput}
-        />
-        <button type="submit">Submit</button>
-      </form>
+      </Container>
     </div>
   );
 }

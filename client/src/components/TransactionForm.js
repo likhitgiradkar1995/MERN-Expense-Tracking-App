@@ -40,7 +40,6 @@ export default function TransactionForm({
         : "http://localhost:4000/transaction",
       {
         method: !_.isEmpty(editTransaction) ? "PATCH" : "POST",
-        // method: "PATCH",
         body: JSON.stringify(form),
         headers: {
           "content-type": "application/json",
@@ -60,7 +59,9 @@ export default function TransactionForm({
     <Card sx={{ minWidth: 275, marginTop: 10 }}>
       <CardContent>
         <form onSubmit={handleSubmit}>
-          <Typography variant="h6">Add New Transaction</Typography>
+          <Typography variant="h6" sx={{ marginBottom: 5 }}>
+            Add New Transaction
+          </Typography>
           <TextField
             sx={{ marginRight: 5 }}
             id="outlined-basic"

@@ -32,7 +32,7 @@ export default function TransactionsList({
   };
   return (
     <>
-      <Typography variant="h6" sx={{ marginTop: 10 }}>
+      <Typography variant="h6" sx={{ marginTop: 5, marginBottom: 5 }}>
         Transactions List
       </Typography>
       <TableContainer component={Paper}>

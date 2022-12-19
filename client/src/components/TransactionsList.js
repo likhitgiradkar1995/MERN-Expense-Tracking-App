@@ -18,9 +18,12 @@ export default function TransactionsList({
 }) {
   const deleteClickHandler = async (id) => {
     if (!window.confirm("Are you sure you want to delete ?")) return;
-    const res = await fetch(`http://localhost:4000/transaction/${id}`, {
-      method: "DELETE",
-    });
+    const res = await fetch(
+      `${process.env.REACT_APP_API_URL}/transaction/${id}`,
+      {
+        method: "DELETE",
+      }
+    );
     if (res.ok) {
       fetchTransaction();
       window.alert("transaction deleted successfully!");

@@ -35,7 +35,7 @@ router.post("/login", async (req, res) => {
   const userExists = await User.findOne({ email });
 
   if (!userExists) {
-    res.status(406).json({ message: "User already exists" });
+    res.status(406).json({ message: "User not exists" });
     return;
   }
 
@@ -50,7 +50,7 @@ router.post("/login", async (req, res) => {
     username: email,
     _id: userExists._id,
   };
-  const token = jwt.sign({}, "some secret.");
+  const token = jwt.sign(payload, process.env.JWT_SECRET);
   console.log(token);
   res.json({ message: "successfully log in ", token });
 });

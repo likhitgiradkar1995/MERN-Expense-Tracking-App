@@ -36,8 +36,8 @@ export default function TransactionForm({
     e.preventDefault();
     const res = await fetch(
       !_.isEmpty(editTransaction)
-        ? `http://localhost:4000/transaction/${editTransaction._id}`
-        : "http://localhost:4000/transaction",
+        ? `${process.env.REACT_APP_API_URL}/transaction/${editTransaction._id}`
+        : `${process.env.REACT_APP_API_URL}/transaction`,
       {
         method: !_.isEmpty(editTransaction) ? "PATCH" : "POST",
         body: JSON.stringify(form),

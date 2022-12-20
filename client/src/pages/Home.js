@@ -23,7 +23,6 @@ function Home() {
     });
     const { data } = await res.json();
     setTransactions(data);
-    console.log("fetch data >> ", data);
   };
 
   return (

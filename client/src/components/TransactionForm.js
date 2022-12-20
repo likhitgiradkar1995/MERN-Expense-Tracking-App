@@ -7,6 +7,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import _ from "lodash";
+import Cookies from "js-cookie";
 
 const initialForm = { amount: 0, description: "", date: new Date() };
 
@@ -16,6 +17,7 @@ export default function TransactionForm({
   setEditTransaction,
 }) {
   const [form, setForm] = useState(initialForm);
+  const token = Cookies.get("token");
 
   useEffect(() => {
     if (editTransaction) {
@@ -32,6 +34,7 @@ export default function TransactionForm({
     setForm({ ...form, date: newValue });
   };
 
+  // add and update transaction api call
   const handleSubmit = async (e) => {
     e.preventDefault();
     const res = await fetch(
@@ -43,6 +46,7 @@ export default function TransactionForm({
         body: JSON.stringify(form),
         headers: {
           "content-type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
       }
     );
@@ -52,7 +56,6 @@ export default function TransactionForm({
       setEditTransaction({});
     }
     const data = await res.json();
-    console.log("data >> ", data);
   };
 
   return (

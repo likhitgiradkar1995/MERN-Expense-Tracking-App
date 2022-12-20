@@ -10,18 +10,24 @@ import { IconButton, Typography } from "@mui/material";
 import EditSharpIcon from "@mui/icons-material/EditSharp";
 import DeleteSharpIcon from "@mui/icons-material/DeleteSharp";
 import dayjs from "dayjs";
+import Cookies from "js-cookie";
 
 export default function TransactionsList({
   transactionsList,
   fetchTransaction,
   setEditTransaction,
 }) {
+  const token = Cookies.get("token");
+
   const deleteClickHandler = async (id) => {
     if (!window.confirm("Are you sure you want to delete ?")) return;
     const res = await fetch(
       `${process.env.REACT_APP_API_URL}/transaction/${id}`,
       {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
     );
     if (res.ok) {

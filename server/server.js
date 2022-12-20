@@ -1,9 +1,7 @@
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
-import TransactionRouter from "./routes/transactions.js";
-import AuthRouter from "./routes/auth.js";
-import userRouter from "./routes/user.js";
+import routes from "./routes/index.js";
 import connect from "./database/mongoDb.js";
 import passport from "passport";
 import passportConfig from "./config/passport.js";
@@ -18,13 +16,7 @@ app.use(bodyParser());
 app.use(passport.initialize());
 passportConfig(passport);
 
-app.use("/transaction", TransactionRouter);
-app.use("/auth", AuthRouter);
-app.use("/user", userRouter);
-
-// app.get("/", (req, res) => {
-//   res.send("Hello World !");
-// });
+app.use("/", routes);
 
 await connect();
 

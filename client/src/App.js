@@ -1,7 +1,7 @@
 import AppBar from "./components/AppBar";
 import { Outlet } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { getUser } from "./store/auth";
+import { setUser } from "./store/auth";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 
@@ -22,7 +22,7 @@ function App() {
     if (res.ok) {
       //redirect("/login");
       const user = await res.json();
-      dispatch(getUser(user));
+      dispatch(setUser(user));
     }
   };
 

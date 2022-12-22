@@ -12,7 +12,7 @@ import Container from "@mui/material/Container";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
-import { getUser } from "../store/auth";
+import { setUser } from "../store/auth";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -38,7 +38,7 @@ export default function Login() {
 
     if (res.ok) {
       Cookies.set("token", token);
-      dispatch(getUser(user));
+      dispatch(setUser({ user }));
       navigate("/");
     }
   };

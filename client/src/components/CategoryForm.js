@@ -8,55 +8,46 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import _ from "lodash";
 import Cookies from "js-cookie";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setUser } from "../store/auth";
 
 const initialForm = {
-  amount: 0,
-  description: "",
-  date: new Date(),
-  category_id: "",
+  label: "",
+  icon: "",
 };
 
-export default function TransactionForm({
+const icons = ["User"];
+
+export default function CategoryForm({
   fetchTransaction,
-  editTransaction,
-  setEditTransaction,
+  editCategory,
+  //setEditTransaction,
 }) {
-  const user = useSelector((state) => state?.auth?.user);
+  const user = useSelector((state) => state.auth.user);
   const [form, setForm] = useState(initialForm);
   const token = Cookies.get("token");
-  // const categories = [
-  //   { label: "Travel" },
-  //   { label: "Shopping" },
-  //   { label: "Investment" },
-  //   { label: "Bills" },
-  //   { label: "Others" },
-  // ];
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    if (editTransaction) {
-      setForm(editTransaction);
+    if (editCategory) {
+      setForm(editCategory);
     }
-  }, [editTransaction]);
+  }, [editCategory]);
 
   const handleChange = (e) => {
     e.preventDefault();
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleDateChange = (newValue) => {
-    setForm({ ...form, date: newValue });
-  };
-
   // add and update transaction api call
   const handleSubmit = async (e) => {
     e.preventDefault();
     const res = await fetch(
-      !_.isEmpty(editTransaction)
-        ? `${process.env.REACT_APP_API_URL}/transaction/${editTransaction._id}`
-        : `${process.env.REACT_APP_API_URL}/transaction`,
+      !_.isEmpty(editCategory)
+        ? `${process.env.REACT_APP_API_URL}/category/${editCategory._id}`
+        : `${process.env.REACT_APP_API_URL}/category`,
       {
-        method: !_.isEmpty(editTransaction) ? "PATCH" : "POST",
+        method: !_.isEmpty(editCategory) ? "PATCH" : "POST",
         body: JSON.stringify(form),
         headers: {
           "content-type": "application/json",
@@ -65,16 +56,19 @@ export default function TransactionForm({
       }
     );
     if (res.ok) {
-      fetchTransaction();
+      const _user = {
+        ...user,
+        categories: [...user.categories, { ...form }],
+      };
+      dispatch(setUser({ user: _user }));
       setForm(initialForm);
-      setEditTransaction({});
+      //setEditTransaction({});
     }
-    const data = await res.json();
   };
 
   const getCategoryNameById = () => {
     return (
-      user?.categories?.find((category) => category._id === form.category_id) ??
+      user.categories.find((category) => category._id === form.category_id) ??
       ""
     );
   };
@@ -83,56 +77,36 @@ export default function TransactionForm({
     <Card sx={{ minWidth: 275, marginTop: 10 }}>
       <CardContent>
         <Typography variant="h6" sx={{ marginBottom: 5 }}>
-          Add New Transaction
+          Add New Category
         </Typography>
         <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex" }}>
           <TextField
             sx={{ marginRight: 5 }}
             id="outlined-basic"
-            label="Amount"
+            label="Title"
             variant="outlined"
             size="small"
-            name="amount"
-            value={form.amount}
+            name="label"
+            value={form.label}
             onChange={handleChange}
           />
-          <TextField
-            sx={{ marginRight: 5 }}
-            id="outlined-basic"
-            label="Description"
-            variant="outlined"
-            size="small"
-            name="description"
-            value={form.description}
-            onChange={handleChange}
-          />
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DesktopDatePicker
-              label="Transaction Date"
-              inputFormat="DD/MM/YYYY"
-              value={form.date}
-              onChange={handleDateChange}
-              renderInput={(params) => (
-                <TextField sx={{ marginRight: 5 }} size="small" {...params} />
-              )}
-            />
-          </LocalizationProvider>
+
           <Autocomplete
             value={getCategoryNameById()}
             onChange={(event, newValue) => {
-              setForm({ ...form, category_id: newValue._id });
+              setForm({ ...form, icon: newValue });
             }}
             // inputValue={form.category}
             // onInputChange={(event, newInputValue) => {
             //   setInputValue(newInputValue);
             // }}
             id="controllable-states-demo"
-            options={user.categories ? user.categories : []}
+            options={icons}
             sx={{ width: 200, marginRight: 5 }}
             renderInput={(params) => (
               <TextField
                 {...params}
-                label="category"
+                label="icons"
                 sx={{ marginRight: 5 }}
                 size="small"
               />
@@ -140,9 +114,9 @@ export default function TransactionForm({
           />
           <Button
             type="submit"
-            variant={!_.isEmpty(editTransaction) ? "outlined" : "contained"}
+            variant={!_.isEmpty(editCategory) ? "outlined" : "contained"}
           >
-            {!_.isEmpty(editTransaction) ? "update" : "Submit"}
+            {!_.isEmpty(editCategory) ? "update" : "Submit"}
           </Button>
         </Box>
       </CardContent>

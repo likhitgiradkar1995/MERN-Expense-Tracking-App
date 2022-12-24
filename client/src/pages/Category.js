@@ -1,5 +1,5 @@
 import { Container } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -18,8 +18,8 @@ import CategoryForm from "../components/CategoryForm";
 function Category() {
   const user = useSelector((state) => state.auth.user);
   const token = Cookies.get("token");
-
   const dispatch = useDispatch();
+  const [editCategory, setEditCategory] = useState({});
 
   const deleteClickHandler = async (id) => {
     const res = await fetch(`${process.env.REACT_APP_API_URL}/category/${id}`, {
@@ -40,7 +40,7 @@ function Category() {
 
   return (
     <Container>
-      <CategoryForm editCategory={{}} fetchTransaction={{}} />
+      <CategoryForm editCategory={editCategory} />
       <Typography variant="h6" sx={{ marginTop: 5, marginBottom: 5 }}>
         Transactions List
       </Typography>
@@ -68,7 +68,7 @@ function Category() {
                   <IconButton
                     color="primary"
                     component="label"
-                    //onClick={() => setEditTransaction(row)}
+                    onClick={() => setEditCategory(row)}
                   >
                     <EditSharpIcon />
                   </IconButton>

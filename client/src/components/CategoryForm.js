@@ -3,9 +3,6 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import { Autocomplete, Box, Button, TextField } from "@mui/material";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import _ from "lodash";
 import Cookies from "js-cookie";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,7 +16,6 @@ const initialForm = {
 const icons = ["User"];
 
 export default function CategoryForm({
-  fetchTransaction,
   editCategory,
   //setEditTransaction,
 }) {
@@ -29,7 +25,7 @@ export default function CategoryForm({
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (editCategory) {
+    if (!_.isEmpty(editCategory)) {
       setForm(editCategory);
     }
   }, [editCategory]);
@@ -41,6 +37,7 @@ export default function CategoryForm({
 
   // add and update transaction api call
   const handleSubmit = async (e) => {
+    console.log("edit cat >> ", editCategory);
     e.preventDefault();
     const res = await fetch(
       !_.isEmpty(editCategory)
@@ -56,9 +53,18 @@ export default function CategoryForm({
       }
     );
     if (res.ok) {
+      // const _user = {
+      //   ...user,
+      //   categories: [...user.categories, { ...form }],
+      // };
+
       const _user = {
         ...user,
-        categories: [...user.categories, { ...form }],
+        categories: !_.isEmpty(editCategory)
+          ? user.categories.map((cat) =>
+              cat._id === editCategory._id ? form : cat
+            )
+          : [...user.categories, { ...form }],
       };
       dispatch(setUser({ user: _user }));
       setForm(initialForm);
@@ -67,9 +73,11 @@ export default function CategoryForm({
   };
 
   const getCategoryNameById = () => {
+    // console.log("form >> ", form);
+    // console.log("user >> ", user);
     return (
-      user.categories.find((category) => category._id === form.category_id) ??
-      ""
+      user.categories.find((category) => category._id === form.category_id)
+        ?.icon ?? ""
     );
   };
 

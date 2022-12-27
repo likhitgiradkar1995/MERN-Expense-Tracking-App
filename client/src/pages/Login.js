@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -13,10 +13,13 @@ import { Link as RouterLink, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
 import { setUser } from "../store/auth";
+import Snackbar from "../common-ui-components/Snackbar";
 
 export default function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const [showAlert, setShowAlert] = useState(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -40,6 +43,8 @@ export default function Login() {
       Cookies.set("token", token);
       dispatch(setUser({ user }));
       navigate("/");
+    } else {
+      setShowAlert(true);
     }
   };
 
@@ -100,6 +105,13 @@ export default function Login() {
           </Grid>
         </Box>
       </Box>
+      {showAlert && (
+        <Snackbar
+          open={showAlert}
+          close={() => setShowAlert(false)}
+          message="login credentials are not exists. please try again !"
+        />
+      )}
     </Container>
   );
 }

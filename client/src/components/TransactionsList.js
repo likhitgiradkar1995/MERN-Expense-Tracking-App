@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -12,6 +12,8 @@ import DeleteSharpIcon from "@mui/icons-material/DeleteSharp";
 import dayjs from "dayjs";
 import Cookies from "js-cookie";
 import { useSelector } from "react-redux";
+import ConfirmationDialog from "../common-ui-components/ConfirmationDialog";
+import SnackbarAlert from "../common-ui-components/Snackbar";
 
 export default function TransactionsList({
   data,
@@ -20,21 +22,32 @@ export default function TransactionsList({
 }) {
   const user = useSelector((state) => state.auth.user);
   const token = Cookies.get("token");
+  const [showConfirmDialog, setShowConfirmDialog] = useState({
+    open: false,
+    id: null,
+  });
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
 
-  const deleteClickHandler = async (id) => {
-    if (!window.confirm("Are you sure you want to delete ?")) return;
-    const res = await fetch(
-      `${process.env.REACT_APP_API_URL}/transaction/${id}`,
-      {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+  const deleteClickHandler = (id) => {
+    setShowConfirmDialog({ open: true, id: id });
+  };
+
+  const deleteTransaction = async () => {
+    if (showConfirmDialog.open && showConfirmDialog.id) {
+      const res = await fetch(
+        `${process.env.REACT_APP_API_URL}/transaction/${showConfirmDialog.id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (res.ok) {
+        fetchTransaction();
+        setShowSuccessAlert(true);
       }
-    );
-    if (res.ok) {
-      fetchTransaction();
-      window.alert("transaction deleted successfully!");
+      setShowConfirmDialog({ open: false, id: null });
     }
   };
 
@@ -100,6 +113,24 @@ export default function TransactionsList({
           </TableBody>
         </Table>
       </TableContainer>
+      {showConfirmDialog.open && (
+        <ConfirmationDialog
+          open={showConfirmDialog.open}
+          title="Delete"
+          message="Are you sure, you want to delete this transaction ?"
+          close={() => setShowConfirmDialog({ open: false, id: null })}
+          onDelete={deleteTransaction}
+        />
+      )}
+
+      {showSuccessAlert && (
+        <SnackbarAlert
+          open={showSuccessAlert}
+          close={() => setShowSuccessAlert(false)}
+          message="transaction deleted successfully !"
+          isSuccessAlert={true}
+        />
+      )}
     </>
   );
 }

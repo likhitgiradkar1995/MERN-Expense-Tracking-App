@@ -11,7 +11,7 @@ import Cookies from "js-cookie";
 import { useSelector } from "react-redux";
 
 const initialForm = {
-  amount: 0,
+  amount: "",
   description: "",
   date: new Date(),
   category_id: "",
@@ -25,13 +25,6 @@ export default function TransactionForm({
   const user = useSelector((state) => state?.auth?.user);
   const [form, setForm] = useState(initialForm);
   const token = Cookies.get("token");
-  // const categories = [
-  //   { label: "Travel" },
-  //   { label: "Shopping" },
-  //   { label: "Investment" },
-  //   { label: "Bills" },
-  //   { label: "Others" },
-  // ];
 
   useEffect(() => {
     if (editTransaction) {
@@ -94,6 +87,7 @@ export default function TransactionForm({
             size="small"
             name="amount"
             value={form.amount}
+            type="number"
             onChange={handleChange}
           />
           <TextField

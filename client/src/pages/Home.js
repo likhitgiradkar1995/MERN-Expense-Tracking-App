@@ -28,7 +28,7 @@ function Home() {
 
   return (
     <Container>
-      <TransactionChart data={transactions} />
+      {transactions.length > 0 && <TransactionChart data={transactions} />}
       <TransactionForm
         fetchTransaction={fetchTransaction}
         editTransaction={editTransaction}

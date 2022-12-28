@@ -9,6 +9,10 @@ import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import _ from "lodash";
 import Cookies from "js-cookie";
 import { useSelector } from "react-redux";
+import AddCircleRoundedIcon from "@mui/icons-material/AddCircleRounded";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import { Link } from "react-router-dom";
 
 const initialForm = {
   amount: "",
@@ -111,27 +115,40 @@ export default function TransactionForm({
               )}
             />
           </LocalizationProvider>
-          <Autocomplete
-            value={getCategoryNameById()}
-            onChange={(event, newValue) => {
-              setForm({ ...form, category_id: newValue._id });
-            }}
-            // inputValue={form.category}
-            // onInputChange={(event, newInputValue) => {
-            //   setInputValue(newInputValue);
-            // }}
-            id="controllable-states-demo"
-            options={user.categories ? user.categories : []}
-            sx={{ width: 200, marginRight: 5 }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="category"
-                sx={{ marginRight: 5 }}
-                size="small"
-              />
-            )}
-          />
+          <div style={{ display: "flex", flexDirection: "row" }}>
+            <Autocomplete
+              value={getCategoryNameById()}
+              onChange={(event, newValue) => {
+                console.log("new value >> ", newValue);
+                setForm({ ...form, category_id: newValue._id });
+              }}
+              id="controllable-states-demo"
+              options={user.categories ? user.categories : []}
+              sx={{ width: 200, marginRight: 1 }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="category"
+                  sx={{ marginRight: 5 }}
+                  size="small"
+                />
+              )}
+            />
+            <Tooltip title="Add Category" placement="top-start" arrow>
+              <Link to="/category">
+                <IconButton
+                  component="label"
+                  color="primary"
+                  sx={{
+                    marginRight: 4,
+                    cursor: "pointer",
+                  }}
+                >
+                  <AddCircleRoundedIcon />
+                </IconButton>
+              </Link>
+            </Tooltip>
+          </div>
           <Button
             type="submit"
             variant={!_.isEmpty(editTransaction) ? "outlined" : "contained"}

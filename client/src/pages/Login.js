@@ -21,14 +21,25 @@ export default function Login() {
 
   const [showAlert, setShowAlert] = useState(false);
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const form = {
       email: data.get("email"),
       password: data.get("password"),
     };
+    loginApiCall(form);
+  };
 
+  const handleDemoLoginClick = () => {
+    const form = {
+      email: "lik@gmail.com",
+      password: "lik123",
+    };
+    loginApiCall(form);
+  };
+
+  const loginApiCall = async (form) => {
     const res = await fetch(`${process.env.REACT_APP_API_URL}/auth/login`, {
       method: "POST",
       body: JSON.stringify(form),
@@ -94,6 +105,17 @@ export default function Login() {
           >
             Sign In
           </Button>
+
+          <Button
+            fullWidth
+            variant="contained"
+            sx={{ mt: 2, mb: 2 }}
+            color="warning"
+            onClick={handleDemoLoginClick}
+          >
+            Demo Login
+          </Button>
+
           <Grid container>
             <Grid item>
               <RouterLink to="/register">

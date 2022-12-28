@@ -15,10 +15,7 @@ const initialForm = {
 
 const icons = ["User"];
 
-export default function CategoryForm({
-  editCategory,
-  //setEditTransaction,
-}) {
+export default function CategoryForm({ editCategory, setEditCategory }) {
   const user = useSelector((state) => state.auth.user);
   const [form, setForm] = useState(initialForm);
   const token = Cookies.get("token");
@@ -37,7 +34,6 @@ export default function CategoryForm({
 
   // add and update transaction api call
   const handleSubmit = async (e) => {
-    console.log("edit cat >> ", editCategory);
     e.preventDefault();
     const res = await fetch(
       !_.isEmpty(editCategory)
@@ -68,13 +64,11 @@ export default function CategoryForm({
       };
       dispatch(setUser({ user: _user }));
       setForm(initialForm);
-      //setEditTransaction({});
+      setEditCategory({});
     }
   };
 
   const getCategoryNameById = () => {
-    // console.log("form >> ", form);
-    // console.log("user >> ", user);
     return (
       user.categories.find((category) => category._id === form.category_id)
         ?.icon ?? ""

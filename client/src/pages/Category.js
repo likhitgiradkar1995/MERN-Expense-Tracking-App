@@ -14,35 +14,59 @@ import Cookies from "js-cookie";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../store/auth";
 import CategoryForm from "../components/CategoryForm";
+import ConfirmationDialog from "../common-ui-components/ConfirmationDialog";
+import SnackbarAlert from "../common-ui-components/Snackbar";
 
 function Category() {
   const user = useSelector((state) => state.auth.user);
   const token = Cookies.get("token");
   const dispatch = useDispatch();
+
   const [editCategory, setEditCategory] = useState({});
+  const [showConfirmDialog, setShowConfirmDialog] = useState({
+    open: false,
+    id: null,
+  });
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
 
-  const deleteClickHandler = async (id) => {
-    const res = await fetch(`${process.env.REACT_APP_API_URL}/category/${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+  const deleteClickHandler = (id) => {
+    setShowConfirmDialog({ open: true, id: id });
+  };
 
-    if (res.ok) {
-      const _user = {
-        ...user,
-        categories: user.categories.filter((cat) => cat._id !== id),
-      };
-      dispatch(setUser({ user: _user }));
+  const deleteCategory = async () => {
+    if (showConfirmDialog.open && showConfirmDialog.id) {
+      const res = await fetch(
+        `${process.env.REACT_APP_API_URL}/category/${showConfirmDialog.id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (res.ok) {
+        const _user = {
+          ...user,
+          categories: user.categories.filter(
+            (cat) => cat._id !== showConfirmDialog.id
+          ),
+        };
+        dispatch(setUser({ user: _user }));
+        setShowSuccessAlert(true);
+      }
+      setShowConfirmDialog({ open: false, id: null });
     }
   };
 
   return (
     <Container>
-      <CategoryForm editCategory={editCategory} />
+      <CategoryForm
+        editCategory={editCategory}
+        setEditCategory={setEditCategory}
+      />
       <Typography variant="h6" sx={{ marginTop: 5, marginBottom: 5 }}>
-        Transactions List
+        Category List
       </Typography>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -86,6 +110,23 @@ function Category() {
           </TableBody>
         </Table>
       </TableContainer>
+      {showConfirmDialog.open && (
+        <ConfirmationDialog
+          open={showConfirmDialog.open}
+          title="Delete"
+          message="Are you sure, you want to delete this category ?"
+          close={() => setShowConfirmDialog({ open: false, id: null })}
+          onDelete={deleteCategory}
+        />
+      )}
+      {showSuccessAlert && (
+        <SnackbarAlert
+          open={showSuccessAlert}
+          close={() => setShowSuccessAlert(false)}
+          message="category deleted successfully !"
+          isSuccessAlert={true}
+        />
+      )}
     </Container>
   );
 }
